@@ -1,18 +1,10 @@
-quicksort([X|Xs],Ys) :-
-  partition(Xs,X,Left,Right),
-  quicksort(Left,Ls),
-  quicksort(Right,Rs),
-  append(Ls,[X|Rs],Ys).
-quicksort([],[]).
 
-partition([X|Xs],Y,[X|Ls],Rs) :-
-  X <= Y, partition(Xs,Y,Ls,Rs).
-partition([X|Xs],Y,Ls,[X|Rs]) :-
-  X > Y, partition(Xs,Y,Ls,Rs).
-partition([],Y,[],[]).
+pivot(_, [], [], []).
+pivot(Pivot, [Head|Tail], [Head|LessOrEqualThan], GreaterThan) :- Pivot >= Head, pivot(Pivot, Tail, LessOrEqualThan, GreaterThan). 
+pivot(Pivot, [Head|Tail], LessOrEqualThan, [Head|GreaterThan]) :- pivot(Pivot, Tail, LessOrEqualThan, GreaterThan).
 
-append([],Ys,Ys).
-append([X|Xs],Ys,[X|Zs]) :- append(Xs,Ys,Zs).
+quicksort([], []).
+quicksort([Head|Tail], Sorted) :- pivot(Head, Tail, List1, List2), quicksort(List1, SortedList1), quicksort(List2, SortedList2), append(SortedList1, [Head|SortedList2], Sorted).
 
 /*********************/
 
