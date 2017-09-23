@@ -25,6 +25,21 @@ figura(List):-
 	X =:= 4 -> write("Paralelogramo");
 	X =:= 6 -> write("Hexagono")
 	).
+/*K es el valor a buscar, NO ES EN UNA LISTA ES RECURSIVO, devuelve false siempre y para al encontrar el K o al llegar al nivel 255 ->cuando no lo encuentra*/
+derecha(K) :- N is 1, derecha(N, K).
+derecha(_, 0):- nl.
+derecha(N, K):-
+  N < 256, K > 0, N1 is N+1, Q is (N*(N+1)/2), Q \== K,
+  write(Q),write('   '),
+  derecha(N1, K).
+
+izquierda(K) :- N is 1, izquierda(N, K).
+izquierda(_, 0):- nl.
+izquierda(N, K):-
+  N < 256,  K > 0, N1 is N+1, Q is((N-1)*N/2)+1, Q \== K,
+  write(Q),write('   '),
+  izquierda(N1, K).
+
 
 /*Sin terminar*/
 bordes([]).
