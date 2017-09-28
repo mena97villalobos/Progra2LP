@@ -5,7 +5,7 @@
 isShapeValid(List) :-
     length(List, X),
     (
-        X =:= 3 -> write("Triangulo"), isTriangleBalanced(List);
+    X =:= 3 -> write("Triangulo"), isTriangleBalanced(List);
 	X =:= 4 -> write("Paralelogramo"), isParallelogramBalanced(List);
 	X =:= 6 -> write("Hexagono"), isHexagonBalanced(List)
     ).
