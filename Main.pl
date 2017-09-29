@@ -25,20 +25,19 @@ sizeAux([_|T], Acc, Res):-
 figura(List):-
 	size(List, X),
 	(
-	X =:= 3 -> triangulo(List);
-	X =:= 4 -> write("Paralelogramo"), put(10);
+	X =:= 3 -> triangulo(List), write("Los vertices dados son los de un Triangulo"), put(10);
+	X =:= 4 -> paralelogramo(List), write("Los vertices dados son los de un Paralelogramo"), put(10);
 	X =:= 6 -> write("Hexagono"), put(10);
 	X >= 7 -> write("Los vertices no son una figura valida"), put(10)
 	).
-
+	
 %Vailidar si 3 vertices son un triangulo%
 triangulo(List):-
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[H|T] = Res,
 	verticesValidos(H, T, 0, UpDown),
-	validarLado(UpDown, Sorted, Res),
-	write("Los vertices dados son los de un triangulo").
+	validarLado(UpDown, Sorted, Res).
 	
 %Crear lista de ubicacion en niveles de los vertices%
 crearListaNiveles([], Acc, Acc).
@@ -83,4 +82,44 @@ validarLado(0, Vertices, Niveles):- %base abajo
 	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),%offset desde el borde del triangulo infinito
 	Base =:= Lado,%Validar que la base y el lado sean del mismo tamaño
 	H =:= BaseLev.%Validar el vertice teorico con el vertice dado
+	
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Paralelogramo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+paralelogramo(List):-
+	quicksort(List, Sorted),
+	crearListaNiveles(Sorted, Res, []),%Lista de niveles
+	[H|T] = Res,
+	nivelParalelogramo(H, T),
+	ladosParalelogramo(Res, Sorted, IzqDer),
+	casosParalelogramo(IzqDer, Sorted).
+
+%Verifica que los vertices esten distribuidos en 2 niveles 
+nivelParalelogramo(H, [H2|T]):-
+	H =:= H2,
+	[H3|[H4|_]] = T,
+	H3 =:= H4.
+
+ladosParalelogramo(Niveles, Vertices, Res):-
+	[Ver1|[Ver2|[Ver3|Ver4]]] = Vertices,
+	[Lev1|[_|[Lev3|_]]] = Niveles,
+	Side1 is Ver2 - Ver1,
+	Side1 =:= Ver4 - Ver3,
+	Side1 =:= Lev3 - Lev1,
+	AuxI1 is ((Lev1-1)*Lev1/2)+1,
+	AuxI2 is ((Lev3-3)*Lev3/2)+1,
+	(
+	AuxI1 =:= Ver1 -> Res is 0; %Inclicado a la izquierda como [11,13,24,26]
+	Ver1 - AuxI1 < Ver3 - AuxI2 -> Res is 0; %Inclicado a la izquierda como [11,13,24,26]
+	Ver1 - AuxI1 =:= Ver3 - AuxI2 -> Res is 1 %Inclinado a la derecha como [23, 24, 38, 40]
+	).
+	
+casosParalelogramo(0, Vertices):-
+	[Ver1|[Ver2|[Ver3|[Ver4|_]]]] = Vertices,
+	triangulo([Ver1, Ver2, Ver3]),
+	triangulo([Ver2, Ver3, Ver4]).
+
+casosParalelogramo(1, Vertices):-
+	[Ver1|[Ver2|[Ver3|[Ver4|_]]]] = Vertices,
+	triangulo([Ver1, Ver3, Ver4]),
+	triangulo([Ver1, Ver4, Ver2]).
 	
