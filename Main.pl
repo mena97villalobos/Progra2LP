@@ -34,17 +34,18 @@ figura(List):-
 %Vailidar si 3 vertices son un triangulo%
 triangulo(List):-
 	quicksort(List, Sorted),
-	crearLista(Sorted, Res, []),%Lista de niveles
-	[H|T] = ResSorted,
+	crearListaNiveles(Sorted, Res, []),%Lista de niveles
+	[H|T] = Res,
 	verticesValidos(H, T, 0, UpDown),
-	validarLado(UpDown, Sorted, ResSorted).
+	validarLado(UpDown, Sorted, Res),
+	write("").
 	
 %Crear lista de ubicacion en niveles de los vertices%
-crearLista([], Acc, Acc).
-crearLista([H|T], Res, Acc):-
+crearListaNiveles([], Acc, Acc).
+crearListaNiveles([H|T], Res, Acc):-
 	calcNivel(H, 1, X),
 	append(Acc, [X|[]], NewAcc),
-	crearLista(T, Res, NewAcc).
+	crearListaNiveles(T, Res, NewAcc).
 
 %Calcular el nivel de un vertice%
 calcNivel(Int, Nivel, Res):-
@@ -58,12 +59,12 @@ calcNivel(Int, Nivel, Res):-
 %Retorna true si hay dos vertices en el mismo nivel SOLO PARA TRIANGULO se usa 0 cuando es la primera revision y 1 cuando es la segunda%
 verticesValidos(Hanterior, [H|T], 0, Res):-
 	(
-		Hanterior =:= H -> write("Base arriba"), Res is 1, true. %validarLados(Vertices, Niveles, 0), true;
-		verticesValidos(H, T, 1)
+		Hanterior =:= H -> Res is 1, true;
+		verticesValidos(H, T, 1, Res)
 	).
 	
-verticesValidos(Hanterior, HeadTail, 1):-
-	Hanterior =:= HeadTail -> write("Base abajo"), Res is 0, true. %validarLados(Vertices, Niveles, 1), true.
+verticesValidos(Hanterior, HeadTail, 1, Res):-
+	Hanterior =:= HeadTail -> Res is 0, true.
 
 validarLado(1, Vertices, Niveles):- %base arriba
 	[H|[HofT|TofT]] = Vertices,
@@ -72,32 +73,17 @@ validarLado(1, Vertices, Niveles):- %base arriba
 	Lado is TofTN - HofTN + 1,%Igualar numero de vertices del lado
 	BaseLev is H-(((HN-1)*HN/2)+1),
 	InicioLev is ((TofTN-1)*TofTN/2)+1+(Base-1)+BaseLev,
+	Base =:= Lado,
 	InicioLev =:= TofT.
-	
 
-/*Falta FIXME	
-validarLados(Vertices, Niveles, 0):-
-	[H|T] = Vertices,
-	[HofT|_] = T,
-	Base is HofT - T, %Tamaño de la base
+validarLado(0, Vertices, Niveles):- %base abajo
+	[H|[HofT|TofT]] = Vertices,
+	[HN|[HofTN|TofTN]] = Niveles,
+	%Cambiar para cuando la base esta abajo
 	
-	[HofNivel|TofNivel] = Niveles,
-	[_|TofT] = TofNivel,
-	Lado1 is TofT - HofNivel,
+	Base is TofT - HofT + 1,%Igualar el numero de vertices de la base
+	Lado is TofTN - HN + 1,%Igualar numero de vertices del lado
+	Base =:= Lado,
+	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),
+	H =:= BaseLev.
 	
-	
-	Base =:= Lado -> true.
-	
-validarLados(Vertices, Niveles, 1):-
-	[H|T] = Vertices,
-	[HofT|_] = T,
-	Base is HofT - T, %Tamaño de la base
-	
-	[X|Y] = Niveles,
-	[Z|_] = TofNivel,
-	Lado1 is TofT - HofNivel,
-	
-	
-	Base =:= Lado -> true.
-	
-*/
