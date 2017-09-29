@@ -12,25 +12,19 @@ quicksort([Head|Tail], Sorted) :-
 	quicksort(List2, SortedList2), 
 	append(SortedList1, [Head|SortedList2], Sorted).
 
-%Tamaño dde una lista%
-size([H|T], Result):-
-	sizeAux(T, 1, Result).
-
-sizeAux([], Acc, Acc).
-sizeAux([_|T], Acc, Res):-
-	NewAcc is 1 + Acc,
-    sizeAux(T, NewAcc, Res).
-
 %Aproximar el resultado por la cantidad de vertices de la entrada%
 figura(List):-
-	size(List, X),
+	length(List, X),
 	(
-	X =:= 3 -> triangulo(List), write("Los vertices dados son los de un Triangulo"), put(10);
-	X =:= 4 -> paralelogramo(List), write("Los vertices dados son los de un Paralelogramo"), put(10);
-	X =:= 6 -> write("Hexagono"), put(10);
-	X >= 7 -> write("Los vertices no son una figura valida"), put(10)
+	X =:= 3 -> triangulo(List), write("Los vertices: "), write(List), write(" son los de un Triangulo"), put(10);
+	X =:= 4 -> paralelogramo(List), write("Los vertices: "), write(List), write(" son los de un Paralelogramo"), put(10);
+	X =:= 6 -> hexagono(List), write("Los vertices: "), write(List), write(" son los de un Hexagono"), put(10);
+	write("Los vertices no son una figura valida"), put(10)
 	).
-	
+
+figura(_):-
+	write("Los vertices no son una figura valida").
+
 %Vailidar si 3 vertices son un triangulo%
 triangulo(List):-
 	quicksort(List, Sorted),
@@ -123,3 +117,25 @@ casosParalelogramo(1, Vertices):-
 	triangulo([Ver1, Ver3, Ver4]),
 	triangulo([Ver1, Ver4, Ver2]).
 	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%Hexagono%%%%%%%%%%%%%%%%%%%%%%%%%
+hexagono(List):-
+	quicksort(List, Sorted),
+	crearListaNiveles(Sorted, Res, []),%Lista de niveles
+	nivelesHexagono(Res),
+	validarHexagono(Sorted).
+	
+nivelesHexagono(Niveles):-
+	[N1|[N2|[N3|[N4|[N5|[N6|_]]]]]] = Niveles,
+	N1 =:= N2,
+	N3 =:= N4,
+	N5 =:= N6.
+
+validarHexagono(Vertices):-
+	[V1|[V2|[V3|[V4|[V5|[V6|_]]]]]] = Vertices,
+	Medio is (V4+V3)/2,
+	triangulo([V1,V2,Medio]),
+	triangulo([V2,Medio,V4]),
+	triangulo([Medio,V4,V6]),
+	triangulo([Medio,V5,V6]),
+	triangulo([V3,Medio,V5]),
+	triangulo([V1,V3,Medio]).
