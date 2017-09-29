@@ -38,7 +38,7 @@ triangulo(List):-
 	[H|T] = Res,
 	verticesValidos(H, T, 0, UpDown),
 	validarLado(UpDown, Sorted, Res),
-	write("").
+	write("Los vertices dados son los de un triangulo").
 	
 %Crear lista de ubicacion en niveles de los vertices%
 crearListaNiveles([], Acc, Acc).
@@ -61,29 +61,26 @@ verticesValidos(Hanterior, [H|T], 0, Res):-
 	(
 		Hanterior =:= H -> Res is 1, true;
 		verticesValidos(H, T, 1, Res)
-	).
-	
+	).	
 verticesValidos(Hanterior, HeadTail, 1, Res):-
 	Hanterior =:= HeadTail -> Res is 0, true.
 
+%Validacion del tamaño de los lados para el triangulo
 validarLado(1, Vertices, Niveles):- %base arriba
 	[H|[HofT|TofT]] = Vertices,
 	[HN|[HofTN|TofTN]] = Niveles,
 	Base is HofT - H + 1,%Igualar el numero de vertices de la base
 	Lado is TofTN - HofTN + 1,%Igualar numero de vertices del lado
-	BaseLev is H-(((HN-1)*HN/2)+1),
-	InicioLev is ((TofTN-1)*TofTN/2)+1+(Base-1)+BaseLev,
-	Base =:= Lado,
-	InicioLev =:= TofT.
-
+	BaseLev is H-(((HN-1)*HN/2)+1),%offset desde el borde del triangulo infinito
+	InicioLev is ((TofTN-1)*TofTN/2)+1+(Base-1)+BaseLev,%Conseguir el vertice teorico para el triangulo actual
+	Base =:= Lado,%Validar que la base y el lado sean del mismo tamaño
+	InicioLev =:= TofT.%Validar el vertice teorico con el vertice dado
 validarLado(0, Vertices, Niveles):- %base abajo
 	[H|[HofT|TofT]] = Vertices,
 	[HN|[HofTN|TofTN]] = Niveles,
-	%Cambiar para cuando la base esta abajo
-	
 	Base is TofT - HofT + 1,%Igualar el numero de vertices de la base
 	Lado is TofTN - HN + 1,%Igualar numero de vertices del lado
-	Base =:= Lado,
-	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),
-	H =:= BaseLev.
+	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),%offset desde el borde del triangulo infinito
+	Base =:= Lado,%Validar que la base y el lado sean del mismo tamaño
+	H =:= BaseLev.%Validar el vertice teorico con el vertice dado
 	
