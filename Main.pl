@@ -60,22 +60,23 @@ verticesValidos(Hanterior, HeadTail, 1, Res):-
 
 %Validacion del tamaño de los lados para el triangulo
 validarLado(1, Vertices, Niveles):- %base arriba
-	[H|[HofT|TofT]] = Vertices,
-	[HN|[HofTN|TofTN]] = Niveles,
+	[H|[HofT|[TofT|_]]] = Vertices,
+	[HN|[HofTN|[TofTN|_]]] = Niveles,
 	Base is HofT - H + 1,%Igualar el numero de vertices de la base
 	Lado is TofTN - HofTN + 1,%Igualar numero de vertices del lado
 	BaseLev is H-(((HN-1)*HN/2)+1),%offset desde el borde del triangulo infinito
 	InicioLev is ((TofTN-1)*TofTN/2)+1+(Base-1)+BaseLev,%Conseguir el vertice teorico para el triangulo actual
-	Base =:= Lado,%Validar que la base y el lado sean del mismo tamaño
-	InicioLev =:= TofT.%Validar el vertice teorico con el vertice dado
+	=(Base,Lado),%Validar que la base y el lado sean del mismo tamaño
+	=(InicioLev,TofT).%Validar el vertice teorico con el vertice dado
+	
 validarLado(0, Vertices, Niveles):- %base abajo
-	[H|[HofT|TofT]] = Vertices,
-	[HN|[HofTN|TofTN]] = Niveles,
+	[H|[HofT|[TofT|_]]] = Vertices,
+	[HN|[HofTN|[TofTN|_]]] = Niveles,
 	Base is TofT - HofT + 1,%Igualar el numero de vertices de la base
 	Lado is TofTN - HN + 1,%Igualar numero de vertices del lado
 	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),%offset desde el borde del triangulo infinito
-	Base =:= Lado,%Validar que la base y el lado sean del mismo tamaño
-	H =:= BaseLev.%Validar el vertice teorico con el vertice dado
+	=(Base,Lado),%Validar que la base y el lado sean del mismo tamaño
+	=(H,BaseLev).%Validar el vertice teorico con el vertice dado
 	
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Paralelogramo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,3 +140,4 @@ validarHexagono(Vertices):-
 	triangulo([Medio,V5,V6]),
 	triangulo([V3,Medio,V5]),
 	triangulo([V1,V3,Medio]).
+	
