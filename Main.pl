@@ -1,29 +1,40 @@
+is_figure(_, [H|T]) :-
+	is_figure_helper(H, T).
+
+is_figure_helper(_, []).
+
+is_figure_helper(R, [H|T]) :-
+	length(T, Len),
+	(
+		Len =:= 0 -> is_figure_helper([], []);
+		figura(R), is_figure_helper(H, T)
+	).
+
 %Ordenar una lista por quicksort%
 pivot(_, [], [], []).
-pivot(Pivot, [Head|Tail], [Head|LessOrEqualThan], GreaterThan) :- 
-	Pivot >= Head, pivot(Pivot, Tail, LessOrEqualThan, GreaterThan). 
-pivot(Pivot, [Head|Tail], LessOrEqualThan, [Head|GreaterThan]) :- 
+pivot(Pivot, [Head|Tail], [Head|LessOrEqualThan], GreaterThan) :-
+	Pivot >= Head, pivot(Pivot, Tail, LessOrEqualThan, GreaterThan).
+pivot(Pivot, [Head|Tail], LessOrEqualThan, [Head|GreaterThan]) :-
 	pivot(Pivot, Tail, LessOrEqualThan, GreaterThan).
 
 quicksort([], []).
-quicksort([Head|Tail], Sorted) :- 
-	pivot(Head, Tail, List1, List2), 
-	quicksort(List1, SortedList1), 
-	quicksort(List2, SortedList2), 
+quicksort([Head|Tail], Sorted) :-
+	pivot(Head, Tail, List1, List2),
+	quicksort(List1, SortedList1),
+	quicksort(List2, SortedList2),
 	append(SortedList1, [Head|SortedList2], Sorted).
 
 %Aproximar el resultado por la cantidad de vertices de la entrada%
-figura(List):-
-	length(List, X),
+figura(R):-
+	length(R, X),
 	(
-	X =:= 3 -> triangulo(List), write("Los vertices: "), write(List), write(" son los de un Triangulo"), put(10);
-	X =:= 4 -> paralelogramo(List), write("Los vertices: "), write(List), write(" son los de un Paralelogramo"), put(10);
-	X =:= 6 -> hexagono(List), write("Los vertices: "), write(List), write(" son los de un Hexagono"), put(10);
-	write("Los vertices no son una figura valida"), put(10)
-	).
+	X =:= 3 -> triangulo(R), write("R = "), write(R), write(" son los vertices de un Triangulo."), put(10);
+	X =:= 4 -> paralelogramo(R), write("R = "), write(R), write(" son los vertices de un Paralelogramo."), put(10);
+	X =:= 6 -> hexagono(R), write("R = "), write(R), write(" son los vertices de un Hexagono."), put(10);
+	write("R = "), write(R), write(" no son los vertices de una figura aceptable."), put(10)).
 
-figura(_):-
-	write("Los vertices no son una figura valida").
+figura(R):-
+	write("R = "), write(R), write(" no son los vertices de una figura aceptable."), put(10).
 
 %Vailidar si 3 vertices son un triangulo%
 triangulo(List):-
@@ -32,7 +43,7 @@ triangulo(List):-
 	[H|T] = Res,
 	verticesValidos(H, T, 0, UpDown),
 	validarLado(UpDown, Sorted, Res).
-	
+
 %Crear lista de ubicacion en niveles de los vertices%
 crearListaNiveles([], Acc, Acc).
 crearListaNiveles([H|T], Res, Acc):-
@@ -54,7 +65,7 @@ verticesValidos(Hanterior, [H|T], 0, Res):-
 	(
 		Hanterior =:= H -> Res is 1, true;
 		verticesValidos(H, T, 1, Res)
-	).	
+	).
 verticesValidos(Hanterior, HeadTail, 1, Res):-
 	Hanterior =:= HeadTail -> Res is 0, true.
 
@@ -68,7 +79,7 @@ validarLado(1, Vertices, Niveles):- %base arriba
 	InicioLev is ((TofTN-1)*TofTN/2)+1+(Base-1)+BaseLev,%Conseguir el vertice teorico para el triangulo actual
 	=(Base,Lado),%Validar que la base y el lado sean del mismo tamaño
 	=(InicioLev,TofT).%Validar el vertice teorico con el vertice dado
-	
+
 validarLado(0, Vertices, Niveles):- %base abajo
 	[H|[HofT|[TofT|_]]] = Vertices,
 	[HN|[HofTN|[TofTN|_]]] = Niveles,
@@ -77,8 +88,8 @@ validarLado(0, Vertices, Niveles):- %base abajo
 	BaseLev is ((HN-1)*HN/2)+1 + HofT-(((HofTN-1)*HofTN/2)+1),%offset desde el borde del triangulo infinito
 	=(Base,Lado),%Validar que la base y el lado sean del mismo tamaño
 	=(H,BaseLev).%Validar el vertice teorico con el vertice dado
-	
-	
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Paralelogramo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 paralelogramo(List):-
 	quicksort(List, Sorted),
@@ -88,7 +99,7 @@ paralelogramo(List):-
 	ladosParalelogramo(Res, Sorted, IzqDer),
 	casosParalelogramo(IzqDer, Sorted).
 
-%Verifica que los vertices esten distribuidos en 2 niveles 
+%Verifica que los vertices esten distribuidos en 2 niveles
 nivelParalelogramo(H, [H2|T]):-
 	H =:= H2,
 	[H3|[H4|_]] = T,
@@ -107,7 +118,7 @@ ladosParalelogramo(Niveles, Vertices, Res):-
 	Ver1 - AuxI1 < Ver3 - AuxI2 -> Res is 0; %Inclicado a la izquierda como [11,13,24,26]
 	Ver1 - AuxI1 =:= Ver3 - AuxI2 -> Res is 1 %Inclinado a la derecha como [23, 24, 38, 40]
 	).
-	
+
 casosParalelogramo(0, Vertices):-
 	[Ver1|[Ver2|[Ver3|[Ver4|_]]]] = Vertices,
 	triangulo([Ver1, Ver2, Ver3]),
@@ -117,14 +128,14 @@ casosParalelogramo(1, Vertices):-
 	[Ver1|[Ver2|[Ver3|[Ver4|_]]]] = Vertices,
 	triangulo([Ver1, Ver3, Ver4]),
 	triangulo([Ver1, Ver4, Ver2]).
-	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Hexagono%%%%%%%%%%%%%%%%%%%%%%%%%
 hexagono(List):-
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	nivelesHexagono(Res),
 	validarHexagono(Sorted).
-	
+
 nivelesHexagono(Niveles):-
 	[N1|[N2|[N3|[N4|[N5|[N6|_]]]]]] = Niveles,
 	N1 =:= N2,
@@ -140,4 +151,14 @@ validarHexagono(Vertices):-
 	triangulo([Medio,V5,V6]),
 	triangulo([V3,Medio,V5]),
 	triangulo([V1,V3,Medio]).
-	
+
+
+
+
+
+
+
+
+
+
+
