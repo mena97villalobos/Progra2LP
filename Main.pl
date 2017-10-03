@@ -16,8 +16,8 @@ quicksort([Head|Tail], Sorted) :-
 is_figureT(_,[]).
 
 is_figure(R, [H|T]):-
-	is_figureT(R, T),
-	is_figureH(R, H).
+	is_figureH(R, H);
+	is_figureT(R, T).
 	
 is_figureT(R, [H|T]):-
 	is_figureH(R, H);
@@ -25,13 +25,14 @@ is_figureT(R, [H|T]):-
 	
 is_figureH(R, H):-
 	length(H, Size),
-	(	
+	(
 	Size =:= 3 -> triangulo(H), stringTriangulo(H, R);
 	Size =:= 4 -> (paralelogramo(H); rombo(H)), stringParalelogramo(H, R);
 	Size =:= 6 -> hexagono(H), stringHexagono(H, R);
-	default(H, R)
+	default(H, R)%FIXME fallo al instanciar R%
 	).
 	
+%%%%%%%%%%%%%%Crear los strings para cada resultado%%%%%%%%%%%%%%%%%%%	
 stringTriangulo(List, R):-
 	atomic_list_concat(List, ' ', Atom), 
 	A = 'Los vertices: ', 
