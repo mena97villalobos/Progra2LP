@@ -12,20 +12,55 @@ quicksort([Head|Tail], Sorted) :-
 	quicksort(List2, SortedList2), 
 	append(SortedList1, [Head|SortedList2], Sorted).
 
-%Aproximar el resultado por la cantidad de vertices de la entrada%
-figura(List):-
-	length(List, X),
+%%%%%%%%%%%%%Main%%%%%%%%%%%%%%%%%%%	
+is_figureT(_,[]).
+
+is_figure(R, [H|T]):-
+	is_figureH(R, H),
+	is_figureT(R, T).
+
+is_figureT(R, [H|T]):-
+	is_figureH(R, H),
+	is_figure(R, T).
+	
+is_figureH(R, H):-
 	(
-	X =:= 3 -> triangulo(List), write("Los vertices: "), write(List), write(" son los de un Triangulo"), put(10);
-	X =:= 4 -> paralelogramo(List), write("Los vertices: "), write(List), write(" son los de un Paralelogramo"), put(10);
-	X =:= 6 -> hexagono(List), write("Los vertices: "), write(List), write(" son los de un Hexagono"), put(10);
-	write("Los vertices no son una figura valida"), put(10)
+	triangulo(H) -> stringTriangulo(H, R);
+	paralelogramo(H) -> stringParalelogramo(H, R);
+	hexagono(H) -> stringHexagono(H, R);
+	default(H, R)
 	).
+	
+stringTriangulo(List, R):-
+	atomic_list_concat(List, ' ', Atom), 
+	A = 'Los vertices: ', 
+	B = ' son los de un triangulo', 
+	string_concat(A, Atom, S1), 
+	string_concat(S1, B, R).
 
-figura(_):-
-	write("Los vertices no son una figura valida").
+stringParalelogramo(List, R):-
+	atomic_list_concat(List, ' ', Atom), 
+	A = 'Los vertices: ', 
+	B = ' son los de un paralelogramo', 
+	string_concat(A, Atom, S1), 
+	string_concat(S1, B, R).
+	
+stringHexagono(List, R):-
+	hexagono(List),
+	atomic_list_concat(List, ' ', Atom), 
+	A = 'Los vertices: ', 
+	B = ' son los de un hexagono', 
+	string_concat(A, Atom, S1), 
+	string_concat(S1, B, R).
+	
+default(List, R):-
+	atomic_list_concat(List, ' ', Atom), 
+	A = 'Los vertices: ', 
+	B = ' no son una figura valida', 
+	string_concat(A, Atom, S1), 
+	string_concat(S1, B, R).
 
-%Vailidar si 3 vertices son un triangulo%
+%%%%%%%%%%%%%%%%%%%%%%%%triangulo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 triangulo(List):-
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
@@ -141,3 +176,16 @@ validarHexagono(Vertices):-
 	triangulo([V3,Medio,V5]),
 	triangulo([V1,V3,Medio]).
 	
+	
+%%%%%%%%%%%%%%%%%%%%%Rombo(Caso de paralelogramo)%%%%%%%%%%%%%%%%
+rombo(List):-
+	quicksort(List, Sorted),
+	crearListaNiveles(Sorted, Res, []),%Lista de niveles
+	[N1, N2, N3, N4] = Res,
+	[V1,V2,V3,V4] = Sorted,
+	Aux is N2-N1,
+	N2 =:= N3,
+	Aux =:= N4-N2,
+	V3-V2 =:= Aux,
+	triangulo([V1,V2,V3]),
+	triangulo([V2,V3,V4]).
