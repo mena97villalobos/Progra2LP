@@ -26,11 +26,14 @@ is_figureT(R, [H|T]):-
 is_figureH(R, H):-
 	length(H, Size),
 	(
-	Size =:= 3 -> triangulo(H), stringTriangulo(H, R);
-	Size =:= 4 -> (paralelogramo(H); rombo(H)), stringParalelogramo(H, R);
-	Size =:= 6 -> hexagono(H), stringHexagono(H, R);
-	default(H, R)%FIXME fallo al instanciar R%
-	).
+	triangulo(H) -> stringTriangulo(H, R);
+	paralelogramo(H) -> stringParalelogramo(H, R);
+	rombo(H) -> stringParalelogramo(H,R);
+	hexagono(H) -> stringHexagono(H, R)%FIXME fallo al instanciar R%
+	),!.
+	
+is_figureH(R, H):-
+	default(H, R).
 	
 %%%%%%%%%%%%%%Crear los strings para cada resultado%%%%%%%%%%%%%%%%%%%	
 stringTriangulo(List, R):-
@@ -64,6 +67,8 @@ default(List, R):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%triangulo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 triangulo(List):-
+	length(List, Size),
+	Size =:= 3,
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[H|T] = Res,
@@ -118,6 +123,8 @@ validarLado(0, Vertices, Niveles):- %base abajo
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Paralelogramo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 paralelogramo(List):-
+	length(List, Size),
+	Size =:= 4,
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[H|T] = Res,
@@ -138,11 +145,10 @@ ladosParalelogramo(Niveles, Vertices, Res):-
 	Side1 =:= Ver4 - Ver3,
 	Side1 =:= Lev3 - Lev1,
 	AuxI1 is ((Lev1-1)*Lev1/2)+1,
-	AuxI2 is ((Lev3-3)*Lev3/2)+1,
+	AuxI2 is ((Lev3-1)*Lev3/2)+1,
 	(
-	AuxI1 =:= Ver1 -> Res is 0; %Inclicado a la izquierda como [11,13,24,26]
-	Ver1 - AuxI1 < Ver3 - AuxI2 -> Res is 0; %Inclicado a la izquierda como [11,13,24,26]
-	Ver1 - AuxI1 =:= Ver3 - AuxI2 -> Res is 1 %Inclinado a la derecha como [23, 24, 38, 40]
+	Ver1 - AuxI1 =:= Ver3 - AuxI2 -> Res is 1; %Inclinado a la derecha como [23, 24, 38, 40]
+	Ver1 - AuxI1 < Ver3 - AuxI2 -> Res is 0 %Inclicado a la izquierda como [11,13,24,26]
 	).
 	
 casosParalelogramo(0, Vertices):-
@@ -157,6 +163,8 @@ casosParalelogramo(1, Vertices):-
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Hexagono%%%%%%%%%%%%%%%%%%%%%%%%%
 hexagono(List):-
+	length(List, Size),
+	Size =:= 6,
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	nivelesHexagono(Res),
@@ -181,6 +189,8 @@ validarHexagono(Vertices):-
 	
 %%%%%%%%%%%%%%%%%%%%%Rombo(Caso de paralelogramo)%%%%%%%%%%%%%%%%
 rombo(List):-
+	length(List, Size),
+	Size =:= 4,
 	quicksort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[N1, N2, N3, N4] = Res,
