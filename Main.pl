@@ -1,40 +1,24 @@
-%Ordenar una lista por quicksort%
-pivot(_, [], [], []).
-pivot(Pivot, [Head|Tail], [Head|LessOrEqualThan], GreaterThan) :- 
-	Pivot >= Head, pivot(Pivot, Tail, LessOrEqualThan, GreaterThan). 
-pivot(Pivot, [Head|Tail], LessOrEqualThan, [Head|GreaterThan]) :- 
-	pivot(Pivot, Tail, LessOrEqualThan, GreaterThan).
-
-quicksort([], []).
-quicksort([Head|Tail], Sorted) :- 
-	pivot(Head, Tail, List1, List2), 
-	quicksort(List1, SortedList1), 
-	quicksort(List2, SortedList2), 
-	append(SortedList1, [Head|SortedList2], Sorted).
-
 %%%%%%%%%%%%%Main%%%%%%%%%%%%%%%%%%%	
-is_figureT(_,[]).
-
 is_figure(R, [H|T]):-
 	is_figureH(R, H);
 	is_figureT(R, T).
-	
+
+is_figureT(_,[]).
+
 is_figureT(R, [H|T]):-
 	is_figureH(R, H);
 	is_figureT(R, T).
 	
 is_figureH(R, H):-
-	length(H, Size),
 	(
 	triangulo(H) -> stringTriangulo(H, R);
 	paralelogramo(H) -> stringParalelogramo(H, R);
 	rombo(H) -> stringParalelogramo(H,R);
-	hexagono(H) -> stringHexagono(H, R)%FIXME fallo al instanciar R%
+	hexagono(H) -> stringHexagono(H, R)
 	),!.
 	
 is_figureH(R, H):-
 	default(H, R).
-	
 %%%%%%%%%%%%%%Crear los strings para cada resultado%%%%%%%%%%%%%%%%%%%	
 stringTriangulo(List, R):-
 	atomic_list_concat(List, ' ', Atom), 
@@ -64,12 +48,11 @@ default(List, R):-
 	B = ' no son una figura valida', 
 	string_concat(A, Atom, S1), 
 	string_concat(S1, B, R).
-
 %%%%%%%%%%%%%%%%%%%%%%%%triangulo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 triangulo(List):-
 	length(List, Size),
 	Size =:= 3,
-	quicksort(List, Sorted),
+	sort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[H|T] = Res,
 	verticesValidos(H, T, 0, UpDown),
@@ -120,12 +103,11 @@ validarLado(0, Vertices, Niveles):- %base abajo
 	=(Base,Lado),%Validar que la base y el lado sean del mismo tamaño
 	=(H,BaseLev).%Validar el vertice teorico con el vertice dado
 	
-	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Paralelogramo%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 paralelogramo(List):-
 	length(List, Size),
 	Size =:= 4,
-	quicksort(List, Sorted),
+	sort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	[H|T] = Res,
 	nivelParalelogramo(H, T),
@@ -160,12 +142,27 @@ casosParalelogramo(1, Vertices):-
 	[Ver1|[Ver2|[Ver3|[Ver4|_]]]] = Vertices,
 	triangulo([Ver1, Ver3, Ver4]),
 	triangulo([Ver1, Ver4, Ver2]).
+
+%%%%%%%%%%%%%%%%%%%%%Rombo(Caso de paralelogramo)%%%%%%%%%%%%%%%%
+rombo(List):-
+	length(List, Size),
+	Size =:= 4,
+	sort(List, Sorted),
+	crearListaNiveles(Sorted, Res, []),%Lista de niveles
+	[N1, N2, N3, N4] = Res,
+	[V1,V2,V3,V4] = Sorted,
+	Aux is N2-N1,
+	N2 =:= N3,
+	Aux =:= N4-N2,
+	V3-V2 =:= Aux,
+	triangulo([V1,V2,V3]),
+	triangulo([V2,V3,V4]).
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Hexagono%%%%%%%%%%%%%%%%%%%%%%%%%
 hexagono(List):-
 	length(List, Size),
 	Size =:= 6,
-	quicksort(List, Sorted),
+	sort(List, Sorted),
 	crearListaNiveles(Sorted, Res, []),%Lista de niveles
 	nivelesHexagono(Res),
 	validarHexagono(Sorted).
@@ -185,19 +182,3 @@ validarHexagono(Vertices):-
 	triangulo([Medio,V5,V6]),
 	triangulo([V3,Medio,V5]),
 	triangulo([V1,V3,Medio]).
-	
-	
-%%%%%%%%%%%%%%%%%%%%%Rombo(Caso de paralelogramo)%%%%%%%%%%%%%%%%
-rombo(List):-
-	length(List, Size),
-	Size =:= 4,
-	quicksort(List, Sorted),
-	crearListaNiveles(Sorted, Res, []),%Lista de niveles
-	[N1, N2, N3, N4] = Res,
-	[V1,V2,V3,V4] = Sorted,
-	Aux is N2-N1,
-	N2 =:= N3,
-	Aux =:= N4-N2,
-	V3-V2 =:= Aux,
-	triangulo([V1,V2,V3]),
-	triangulo([V2,V3,V4]).
